@@ -1,0 +1,96 @@
+processes:
+  functionality:
+    normal exits
+    error exits
+    flow control
+    monitoring
+    selective receive
+    timeouts
+    dynamic resizing of stack & heap
+  structure:
+    process-ID hashtable
+      stack
+      heap
+      mailbox
+      links, flags
+
+replace set-car! in compiler with a symbol-table process
+drop set-car!
+
+assembler in lisp
+
+systematize primitive error conditions
+
+abandon the ichbins crutch
+
+try-catch-finally or the like
+
+replace stdin/stdout with an I/O process
+
+basic debugger
+
+control-C handling
+
+quasiquote
+macros
+let-expressions
+
+add nested functions, drop (self)
+
+modules
+
+lazy code loading
+
+hot code loading
+(To do this Erlang-style we need to be able to find out which
+processes are executing in a module. What does that mean, exactly?)
+
+'ref' type
+
+'binary' type
+
+sockets
+
+distribution
+
+
+DONE:
+
+comments
+
+booleans
+  type
+  writing
+  reading
+  switch over from f and t
+
+symbols
+  type
+  string->symbol, symbol->string
+  remove old symbol table stuff
+
+ditch the C stack
+object file with entry-point table
+stack traces
+
+fixnums
+  type
+  arithmetic functions
+  comparison functions
+  writing
+  reading
+  add fixnum? primitive, change char?
+  instruction for full-size literal values
+  check for arithmetic overflow, divide by 0, etc.
+
+round-robin scheduler
+process-ID type
+  primitives: pid?
+(self) primitive, I guess, for now
+spawn
+  instruction: spawn <offset> <#args>
+  compiler & assembler support
+receive & send
+  runtime code
+  send primitive
+  receive primitive

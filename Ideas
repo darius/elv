@@ -1,0 +1,173 @@
+Use a unified heap, at least to start
+
+It's bad for realtime, for multi-CPU, and for memory accounting, but
+simpler for everything else if you put off those concerns.
+
+Once you have a unified heap, the resource-control motivation to send
+to PIDs instead of to channels goes away... OTOH I'm not sure I want
+to do channels even so: snapshots aren't naturally deterministic wrt
+how much of the channel has been filled in. (I'm assuming channels
+act like single-assignment lists, like in Oz.)
+
+
+One-pass mark-compact GC
+
+See the paper. This doesn't go very nicely with sharing the stack and
+heap in one block, growing towards each other, because the base address
+gets reset on every GC. However, it's possible to make them both wrap
+around as needed. Probably more trouble than it's worth compared to a
+separated stack.
+
+
+Process ID garbage collection:
+
+What if each GC cycle on each process guarantees there are no surviving
+process IDs older than a certain age? And processes over the whole
+system are cycled often enough that we can be sure of retiring process
+IDs system-wide before the ID space overflows?
+
+Of course, some IDs would legitimately survive, so we need a table of
+renamings. Can that be made to work? How does it compare to refcounting
+process-ID-table entries? Or of course to using a big enough space that
+you'll never run out?
+
+In summary, the approaches I've thought of to PID collection:
+  * Don't do it. Use a big enough space that you never run out.
+  * Collect PIDs as part of whole-system GC in a unified heap.
+  * Reference-count entries in the PID table. Have each process
+    conservatively track its PID reference set in between GCs.
+  * Periodically recycle names into range with a rename table and 
+    process-at-a-time GC.
+
+
+KeyKOS-style snapshots:
+
+Sort of relatedly, we can use a system-wide GC cycle as a snapshot
+cycle. At the start of a snapshot, you go and make a copy of the process
+variables for every process (mailbox, stack, etc.), retaining them as
+roots on its heap. Then the next time we complete a GC on each process,
+we also append its state to the logfile and null out the snapshot root.
+(How bad would it be to write the current state vs. just the parts
+accessible from the snapshot root? Is there any point in combining this
+with the process GC? Actually that part seems like a bad idea -- the
+main advantage is to combine two traversals, but there are lots of
+disadvantages.)
+
+Stacks should be copied at snap time, or copy-on-write, or represented
+by immutable continuations on the heap.
+
+Simple snapshots interfere with memory accounting: in between snapping
+the snapshot and recording it, we don't know how much live data is 
+'really' still live vs. how much is retained only for the snapshot.
+Also, it affects the compression of the 'real' live data.
+
+Note that there are other applications besides persistence: e.g. 
+omniscient debugging. This requires representing the snapshot in
+memory, not specializing the snapshotter to allow nothing but 
+writing to disk.
+
+What about differential backups? Seems like that'd amount to garbage-
+collecting serialized data identifiers... or something.
+
+Can you handle multiple snapshots not yet written? Should you?
+
+
+Compressed data representations:
+
+First, obviously, when serializing data you can use relative addresses
+to get smaller pointers; and encode directly without any pointers at all
+where terms are just trees instead of DAGs. It might be worthwhile to
+(pretend to) hash-cons when serializing.
+
+But for live data inside a process it ought to make sense to use relative
+pointers and other compression tricks as well:
+
+  * We can keep data in allocation order, and compact on every GC.
+    (There may be complications or costs to representing the backpointer
+    chain during GC, however -- we're no longer guaranteed a big-enough
+    field for the backpointer, right?)
+  * No mutation to worry about.
+
+I'll bet this would be worthwhile: lighter-weight processes, better cache
+behavior. And especially nice for embedded systems. Should be a paper in 
+it.
+
+Maybe it'd be better to pick uncompressed representations on initial
+allocation, and only compress on GC -- don't waste time compressing
+soon-to-be garbage. OTOH that multiplies your allocation rate.
+
+Note you no longer need the tuple type for space efficiency! Though you
+may still want it for speed.
+
+
+Hash consing
+
+Would it be a good idea to hash-cons the live data in a process? I'm
+guessing not, on the whole, but we ought to at least measure the
+opportunity. Maybe make it an option like Erlang's 'hibernate'.
+
+(Unless you add a hashtable on the side, it destroys the
+unidirectional-heap property.)
+
+
+Super-tiny stackless processes
+
+Reactive processes, that are 'just objects', shouldn't have to pay the
+overhead of having their own stack and heap in between invocations.
+Something vaguely like Erlang's hibernate could be appropriate -- only
+we don't thaw a frozen heap, we allocate a fresh auxiliary one for the
+stack and intermediate allocations -- analogous to allocating a stack
+frame in a sequential method call.
+
+Maybe processes should start with that strategy by default until the
+runtime estimates it's a bad idea? I'll need to work out how this might
+possibly work...
+
+With a unified heap this pretty much reduces to giving up your stack
+when it's empty.
+
+
+More GC ideas
+
+It should be possible to GC without sweeping through garbage, using
+extra temporary storage instead.
+
+Maybe reorder objects sometimes, to improve locality. (I'm thinking
+particularly of the case where A uniquely references B, with C in
+between. Coalescing A and B raises an opportunity for data compression.)
+The tricky part is doing this cheaply -- doesn't fall out of the
+original algorithm because by the time you're scavenging B, you've
+already done C.
+
+Note that when we scavenge an object, we know how many references there
+are to it -- the length of the relocation chain. So one idea is to
+notice the above situation when it happens, and make a note to do the
+move on the *next* GC if the objects are still live.
+
+Maybe the GC is what the doctor ordered for rebalancing cords. (I think
+cords should be our primary data structure, not cons pairs.)
+
+
+Hot code loading
+
+Desired constraints:
+  - capability discipline
+  - persistent data structures to work well with snapshotting
+
+Basic idea: a hot code manager is a process you call with a function
+name and get back a function. Might want to have a dedicated channel for
+this...
+
+
+Memory accounting
+
+We want random people on the net to be able to test-drive the system.
+Their memory use must be limited.
+
+Say we base this on process memory quotas. Then:
+  - messages it sends should stay under its account until they're accepted
+  - new processes share the original space-bank
+  - other processes doing work on its behalf should be able to get space
+    from its account -- transferable and divisible space-banks
+
+GC renders enforcement rather nondeterministic. How big a problem is this?

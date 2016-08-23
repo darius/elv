@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mv ichbins2 ichbins &&
+mv ichbins2.c ichbins.c
