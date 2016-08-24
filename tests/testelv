@@ -1,9 +1,0 @@
-#!/bin/sh
-
-f=$1; shift
-
-../elv ../selvc.elv <$f.l >$f.a || exit `./complain $f did not compile`
-python ../elvas.py $f.a >$f.elv || exit `./complain $f.a did not assemble`
-
-../elv ./$f.elv <$f.in >$f.out || exit `./complain Error in $f`
-diff $f.ref $f.out             || exit `./complain Mismatch in $f`

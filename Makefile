@@ -3,7 +3,7 @@ CFLAGS = -g2 -Wall -W
 all: elv newselvc.elv
 
 clean:
-	rm -f elv *.o *.s newselvc.elv tests/?.elv tests/? tests/?.out
+	rm -f elv *.o *.s newselvc.elv tests/*.elv tests/*.s tests/*.a tests/*.out syms tests/syms
 
 elvc: elvc.o
 elv: elv.o
