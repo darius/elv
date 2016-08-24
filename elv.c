@@ -528,7 +528,7 @@ static int decode_int32 (const unsigned char *address) {
 
 #define CASE(value) \
     break; case value: \
-      TRACE2 ("\n%ld %s\t", vm->pc - code, #value);
+      TRACE2 ("\n%zd %s\t", vm->pc - code, #value);
 
 #define NEXT(incr)  ( vm->pc += (incr) )
 
