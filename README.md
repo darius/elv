@@ -3,7 +3,7 @@ A very basic Lisp with Erlang-style processes, on a virtual machine.
 
 I wrote this many years ago, descended from
 [https://github.com/darius/ichbins](Ichbins), but judged it a dead
-end. It's archived here for your entertainment: a very small system
+end. It's archived here for your entertainment: a tiny system
 combining some aspects of Lisp and Erlang but depending on nothing
 more than C.
 
