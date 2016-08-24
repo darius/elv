@@ -1,2 +1,0 @@
-./elvc <elvc.scm >elvc.a
-python elvas.py elvc.a >elvc.elv
