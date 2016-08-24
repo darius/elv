@@ -21,8 +21,8 @@ a version of the compiler that ichbins could compile
 could take advantage of the extra features of itself and the
 VM. `ichbins.scm` itself and its bootstrapping process were also
 included in this repo. So were the corresponding variants of the test
-scripts. I've cut all that out to reduce clutter (except for keeping
-an archive copy of `elvc.scm` in `older/` so that the cut stuff can be
+scripts. I've cut all that out as clutter (except for keeping an
+archive copy of `elvc.scm` in `older/` so that the removed stuff can be
 reconstructed without undue effort). If you want to actively develop
 this system, as a weird challenge or learning experience or something,
 then it might be easiest to bring back the non-bootstrapped version of
