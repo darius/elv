@@ -10,6 +10,8 @@ Undocumented, but these lines should build and run it:
     $ make
     $ (cd tests; ./testallmeta)
 
+The tests serve also as basic examples.
+
 When developing this I didn't depend on the ability to bootstrap;
 instead there was a version of the compiler that ichbins could compile
 (`older/elvc.scm`) along with a parallel version (`selvc.scm`) that
@@ -24,3 +26,6 @@ then it might be easiest to bring back the non-bootstrapped version of
 the compiler, just so then you can use gdb on its C-compiled output --
 as the VM has no debugger. OTOH you might rather make debugging nicer
 on the VM! Whatevs.
+
+(`older/` retains a few other files useful when compiling via ichbins
+instead of bootstrapping. Move them back to their proper places then.)
