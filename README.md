@@ -1,5 +1,5 @@
 # elv
-A very basic Lisp + Erlang-style processes, on a virtual machine
+A very basic Lisp + Erlang-style processes, on a virtual machine.
 
 I wrote this many years ago, descended from
 [https://github.com/darius/ichbins](Ichbins), but judged it a dead
