@@ -19,7 +19,7 @@ system I didn't depend on this ability to bootstrap; instead there was
 a version of the compiler that ichbins could compile
 (`older/elvc.scm`) along with a parallel version (`selvc.scm`) that
 could take advantage of the extra features of itself and the
-VM. ichbins.scm itself and its bootstrapping process were also
+VM. `ichbins.scm` itself and its bootstrapping process were also
 included in this repo. So were the corresponding variants of the test
 scripts. I've cut all that out to reduce clutter (except for keeping
 an archive copy of `elvc.scm` in `older/` so that the cut stuff can be
