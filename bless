@@ -2,9 +2,13 @@
 
 make &&
 
-(cd tests; ./testall ../ichbins2) &&
+(cd tests; ./testallmeta) &&
 
-./ichbins2 <ichbins.scm >ichbins3.c &&
-diff -u ichbins2.c ichbins3.c &&
+# Check that using the *new* compiler to compile itself
+# produces the same VM-assembly code. It's OK for this check
+# to fail, if you expect a nonessential or desired difference,
+# but you should stop and think whether you do.
+./elv selvc.elv <selvc.scm >selvc2.s &&
+diff -u newselvc.s selvc2.s &&
 
-mv ichbins2 ichbins
+mv newselvc.elv selvc.elv

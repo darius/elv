@@ -1,4 +1,4 @@
 #!/bin/sh
 
-mv ichbins2 ichbins &&
-mv ichbins2.c ichbins.c
+mv newselvc.elv selvc.elv
+mv newselvc.s selvc.s
