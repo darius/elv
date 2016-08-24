@@ -2,8 +2,10 @@
 A very basic Lisp + Erlang-style processes, on a virtual machine
 
 I wrote this many years ago, descended from
-https://github.com/darius/ichbins, but judged it a dead end. It's
-archived here for your entertainment.
+[https://github.com/darius/ichbins](Ichbins), but judged it a dead
+end. It's archived here for your entertainment: a very small system
+combining some aspects of Lisp and Erlang but depending on nothing
+more than C.
 
 Undocumented, but these lines should build and run it:
 
@@ -12,8 +14,9 @@ Undocumented, but these lines should build and run it:
 
 The tests serve also as basic examples.
 
-When developing this I didn't depend on the ability to bootstrap;
-instead there was a version of the compiler that ichbins could compile
+Although now the compiler is compiled by itself, when developing this
+system I didn't depend on this ability to bootstrap; instead there was
+a version of the compiler that ichbins could compile
 (`older/elvc.scm`) along with a parallel version (`selvc.scm`) that
 could take advantage of the extra features of itself and the
 VM. ichbins.scm itself and its bootstrapping process were also
